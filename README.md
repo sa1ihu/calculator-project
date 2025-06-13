@@ -5,13 +5,16 @@ The Odin Project - Foundations Final Project
 A calculator built with HTML, CSS, and JavaScript.
 
 ## Features
-- Basic arithmetic operations (+, -, ×, ÷)
-- Clear functionality
-- Decimal support
-- Error handling
-- Keyboard support
+- Perform basic arithmetic: addition, subtraction, multiplication, and division.
+- Decimal and keyboard support.
+- Graceful error handling (e.g., divide-by-zero).
+- Clear (`C`) and delete (`⌫`) functionality.
+- Real-time input display and result evaluation.
+- Lightweight custom expression parser (no `eval()` used).
 
 ## Status
-✅ Complete - All features implemented including extra credit
+Complete - All features implemented including extra credit
 
-Built with vanilla JavaScript as part of The Odin Project curriculum.
+## Live Preview
+You can view the project live at:
+[https://sa1ihu.github.io/calculator-project/]
