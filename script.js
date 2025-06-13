@@ -1,3 +1,5 @@
+let expression = '';
+
 // Basic math operations
 function add(a, b) {
     return a + b;
@@ -52,7 +54,7 @@ let waitingForSecondNumber = false;
 // Update display
 function updateDisplay() {
     const display = document.querySelector('.display-text');
-    display.textContent = displayValue;
+    display.textContent = expression || displayValue;
 }
 
 // Handle number input
@@ -63,12 +65,14 @@ function inputNumber(number) {
     } else {
         displayValue = displayValue === '0' ? number : displayValue + number;
     }
+    expression += number;
     updateDisplay();
 }
 
 // Handle clear
 function clearCalculator() {
     displayValue = '0';
+    expression = '',
     firstNumber = null;
     operator = null;
     waitingForSecondNumber = false;
@@ -77,63 +81,50 @@ function clearCalculator() {
 
 // Handle operator input
 function inputOperator(nextOperator) {
-    const inputValue = parseFloat(displayValue);
-    
-    // If we're waiting for a second number and get another operator,
-    // just change the operator (don't calculate)
     if (waitingForSecondNumber) {
+        // Change last operator if user pressed a new one before entering a second number
+        if (/[+\-*/]$/.test(expression)) {
+            expression = expression.slice(0, -1) + nextOperator;
+        } else {
+            expression += nextOperator;
+        }
         operator = nextOperator;
+        updateDisplay();
         return;
     }
     
+    const inputValue = parseFloat(displayValue);
+
+
     if (firstNumber === null) {
         firstNumber = inputValue;
     } else if (operator) {
         const currentValue = firstNumber || 0;
         const newValue = operate(operator, currentValue, inputValue);
-        
         displayValue = String(roundResult(newValue));
         firstNumber = newValue;
-        updateDisplay();
     }
     
     waitingForSecondNumber = true;
     operator = nextOperator;
+    expression += nextOperator;
+    updateDisplay();
 }
-
-/*
-function inputOperator(nextOperator) {
-    const inputValue = parseFloat(displayValue);
-    
-    if (firstNumber === null) {
-        firstNumber = inputValue;
-    } else if (operator) {
-        const currentValue = firstNumber || 0;
-        const newValue = operate(operator, currentValue, inputValue);
-        
-        displayValue = String(newValue);
-        firstNumber = newValue;
-        updateDisplay();
-    }
-    
-    waitingForSecondNumber = true;
-    operator = nextOperator;
-} 
-*/
 
 // Handle equals
 function calculate() {
-    const inputValue = parseFloat(displayValue);
-    
-     if (firstNumber !== null && operator) {
-        const newValue = operate(operator, firstNumber, inputValue);
-        const roundedValue = roundResult(newValue);
-        displayValue = String(roundedValue);
-        firstNumber = null;
-        operator = null;
-        waitingForSecondNumber = true;
-        updateDisplay();
+     try {
+        const result = evaluateExpression(expression);
+        displayValue = String(roundResult(result));
+    } catch (err) {
+        displayValue = "Error";
     }
+
+    expression = ''; // Clear expression
+    firstNumber = null;
+    operator = null;
+    waitingForSecondNumber = true;
+    updateDisplay();
 }
 
 // Add event listeners when page loads
@@ -241,4 +232,50 @@ function handleKeyboardInput(event) {
     else if (key === 'Backspace') {
         deleteLastInput();
     }
+}
+
+function evaluateExpression(expr) {
+    // Tokenize numbers and operators
+    const tokens = expr.match(/(\d+(\.\d+)?|[+\-*/])/g);
+
+    if (!tokens) return 0;
+
+    // Convert infix to postfix (RPN) using shunting-yard algorithm
+    const output = [];
+    const operators = [];
+
+    const precedence = { '+': 1, '-': 1, '*': 2, '/': 2 };
+    const applyOp = { '+': add, '-': subtract, '*': multiply, '/': divide };
+
+    tokens.forEach(token => {
+        if (!isNaN(token)) {
+            output.push(parseFloat(token));
+        } else if (['+', '-', '*', '/'].includes(token)) {
+            while (
+                operators.length &&
+                precedence[operators[operators.length - 1]] >= precedence[token]
+            ) {
+                output.push(operators.pop());
+            }
+            operators.push(token);
+        }
+    });
+
+    while (operators.length) {
+        output.push(operators.pop());
+    }
+
+    // Evaluate RPN
+    const stack = [];
+    output.forEach(token => {
+        if (typeof token === 'number') {
+            stack.push(token);
+        } else {
+            const b = stack.pop();
+            const a = stack.pop();
+            stack.push(applyOp[token](a, b));
+        }
+    });
+
+    return stack[0];
 }
