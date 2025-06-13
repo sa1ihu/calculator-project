@@ -173,6 +173,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Delete button
     const deleteButton = document.querySelector('.delete');
     deleteButton.addEventListener('click', deleteLastInput);
+
+    // Keyboard support
+    document.addEventListener('keydown', handleKeyboardInput);
 });
 
 // Handle decimal point input
@@ -198,4 +201,44 @@ function deleteLastInput() {
         displayValue = '0';
     }
     updateDisplay();
+}
+
+// Handle keyboard input
+function handleKeyboardInput(event) {
+    const key = event.key;
+    
+    // Numbers
+    if (key >= '0' && key <= '9') {
+        inputNumber(key);
+    }
+    // Operators
+    else if (key === '+') {
+        inputOperator('+');
+    }
+    else if (key === '-') {
+        inputOperator('-');
+    }
+    else if (key === '*') {
+        inputOperator('*');
+    }
+    else if (key === '/') {
+        event.preventDefault(); // Prevent browser search
+        inputOperator('/');
+    }
+    // Decimal point
+    else if (key === '.') {
+        inputDecimal();
+    }
+    // Equals
+    else if (key === 'Enter' || key === '=') {
+        calculate();
+    }
+    // Clear
+    else if (key === 'Escape' || key === 'c' || key === 'C') {
+        clearCalculator();
+    }
+    // Backspace
+    else if (key === 'Backspace') {
+        deleteLastInput();
+    }
 }
