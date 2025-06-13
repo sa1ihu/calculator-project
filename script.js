@@ -165,4 +165,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // Equals button
     const equalsButton = document.querySelector('.equals');
     equalsButton.addEventListener('click', calculate);
+
+    // Decimal button
+    const decimalButton = document.querySelector('.decimal');
+    decimalButton.addEventListener('click', inputDecimal);
 });
+
+// Handle decimal point input
+function inputDecimal() {
+    // If waiting for second number, start fresh with "0."
+    if (waitingForSecondNumber) {
+        displayValue = '0.';
+        waitingForSecondNumber = false;
+    } else {
+        // Only add decimal if there isn't one already
+        if (displayValue.indexOf('.') === -1) {
+            displayValue += '.';
+        }
+    }
+    updateDisplay();
+}
