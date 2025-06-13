@@ -12,6 +12,9 @@ function multiply(a, b) {
 }
 
 function divide(a, b) {
+    if (b === 0) {
+        return "Error: Can't divide by zero!";
+    }
     return a / b;
 }
 
@@ -67,6 +70,13 @@ function clearCalculator() {
 function inputOperator(nextOperator) {
     const inputValue = parseFloat(displayValue);
     
+    // If we're waiting for a second number and get another operator,
+    // just change the operator (don't calculate)
+    if (waitingForSecondNumber) {
+        operator = nextOperator;
+        return;
+    }
+    
     if (firstNumber === null) {
         firstNumber = inputValue;
     } else if (operator) {
@@ -81,6 +91,26 @@ function inputOperator(nextOperator) {
     waitingForSecondNumber = true;
     operator = nextOperator;
 }
+
+/*
+function inputOperator(nextOperator) {
+    const inputValue = parseFloat(displayValue);
+    
+    if (firstNumber === null) {
+        firstNumber = inputValue;
+    } else if (operator) {
+        const currentValue = firstNumber || 0;
+        const newValue = operate(operator, currentValue, inputValue);
+        
+        displayValue = String(newValue);
+        firstNumber = newValue;
+        updateDisplay();
+    }
+    
+    waitingForSecondNumber = true;
+    operator = nextOperator;
+} 
+*/
 
 // Handle equals
 function calculate() {
