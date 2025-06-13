@@ -34,6 +34,15 @@ function operate(operator, a, b) {
     }
 }
 
+// Round long decimals to prevent display overflow
+function roundResult(number) {
+    if (typeof number === 'string') return number; // For error messages
+    if (number.toString().length > 10) {
+        return Math.round(number * 100000) / 100000; // Round to 5 decimal places
+    }
+    return number;
+}
+
 // Calculator state
 let displayValue = '0';
 let firstNumber = null;
@@ -83,7 +92,7 @@ function inputOperator(nextOperator) {
         const currentValue = firstNumber || 0;
         const newValue = operate(operator, currentValue, inputValue);
         
-        displayValue = String(newValue);
+        displayValue = String(roundResult(newValue));
         firstNumber = newValue;
         updateDisplay();
     }
@@ -116,9 +125,10 @@ function inputOperator(nextOperator) {
 function calculate() {
     const inputValue = parseFloat(displayValue);
     
-    if (firstNumber !== null && operator) {
+     if (firstNumber !== null && operator) {
         const newValue = operate(operator, firstNumber, inputValue);
-        displayValue = String(newValue);
+        const roundedValue = roundResult(newValue);
+        displayValue = String(roundedValue);
         firstNumber = null;
         operator = null;
         waitingForSecondNumber = true;
