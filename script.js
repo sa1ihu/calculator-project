@@ -63,6 +63,39 @@ function clearCalculator() {
     updateDisplay();
 }
 
+// Handle operator input
+function inputOperator(nextOperator) {
+    const inputValue = parseFloat(displayValue);
+    
+    if (firstNumber === null) {
+        firstNumber = inputValue;
+    } else if (operator) {
+        const currentValue = firstNumber || 0;
+        const newValue = operate(operator, currentValue, inputValue);
+        
+        displayValue = String(newValue);
+        firstNumber = newValue;
+        updateDisplay();
+    }
+    
+    waitingForSecondNumber = true;
+    operator = nextOperator;
+}
+
+// Handle equals
+function calculate() {
+    const inputValue = parseFloat(displayValue);
+    
+    if (firstNumber !== null && operator) {
+        const newValue = operate(operator, firstNumber, inputValue);
+        displayValue = String(newValue);
+        firstNumber = null;
+        operator = null;
+        waitingForSecondNumber = true;
+        updateDisplay();
+    }
+}
+
 // Add event listeners when page loads
 document.addEventListener('DOMContentLoaded', function() {
     // Number buttons
@@ -76,4 +109,20 @@ document.addEventListener('DOMContentLoaded', function() {
     // Clear button
     const clearButton = document.querySelector('.clear');
     clearButton.addEventListener('click', clearCalculator);
+
+    // Operator buttons
+    const operatorButtons = document.querySelectorAll('.operator');
+    operatorButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            let op = button.textContent;
+            // Convert display symbols to operator symbols
+            if (op === '×') op = '*';
+            if (op === '÷') op = '/';
+            inputOperator(op);
+        });
+    });
+    
+    // Equals button
+    const equalsButton = document.querySelector('.equals');
+    equalsButton.addEventListener('click', calculate);
 });
