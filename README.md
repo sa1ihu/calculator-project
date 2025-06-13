@@ -12,6 +12,6 @@ A calculator built with HTML, CSS, and JavaScript.
 - Keyboard support
 
 ## Status
-🚧 Work in progress
+✅ Complete - All features implemented including extra credit
 
 Built with vanilla JavaScript as part of The Odin Project curriculum.
