@@ -169,6 +169,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Decimal button
     const decimalButton = document.querySelector('.decimal');
     decimalButton.addEventListener('click', inputDecimal);
+
+    // Delete button
+    const deleteButton = document.querySelector('.delete');
+    deleteButton.addEventListener('click', deleteLastInput);
 });
 
 // Handle decimal point input
@@ -182,6 +186,16 @@ function inputDecimal() {
         if (displayValue.indexOf('.') === -1) {
             displayValue += '.';
         }
+    }
+    updateDisplay();
+}
+
+// Handle backspace/delete
+function deleteLastInput() {
+    if (displayValue.length > 1) {
+        displayValue = displayValue.slice(0, -1);
+    } else {
+        displayValue = '0';
     }
     updateDisplay();
 }
